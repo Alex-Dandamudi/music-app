@@ -1,9 +1,43 @@
+import { useEffect, useRef } from "react";
+import { useUser } from "@clerk/react";
+import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../../lib/axios";
+import { Loader } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card"; 
+
 const AuthCallbackPage = () => {
+    const { isLoaded, user } = useUser();
+    const navigate = useNavigate();
+    const syncAttempted = useRef(false);
+
+    useEffect(() => {
+        const syncUser = async () => {
+            if (!isLoaded || !user || syncAttempted.current) return;
+
+            syncAttempted.current = true;
+            try {
+                await axiosInstance.post("/users");
+            } catch (error) {
+                console.log("Error in auth callback", error);
+            } finally {
+                navigate("/");
+            }
+        };
+
+        syncUser();
+    }, [isLoaded, user, navigate]);
+
     return (
-        <div>
-            <h1>AuthCallbackPage</h1>
+        <div className = "h-screen w-full bg-black flex items-center justify-center">
+            <Card className="w-[90%] max-w-2xs bg-zinc-900 border-zinc-800">
+                <CardContent className="flex flex-col items-center gap-4 pt-4">
+                    <Loader className="size-6 animate-spin text-blue-500"/>
+                    <h3 className="text-zinc-400 text-xl font-bold">Logging you in...</h3>
+                    <p className="text-zinc-400 text-sm">Redirecting...</p>
+                </CardContent>
+            </Card>
         </div>
     );
 };
 
-export default AuthCallbackPage
+export default AuthCallbackPage;

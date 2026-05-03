@@ -1,7 +1,7 @@
-import {useAuth} from "@clerk/clerk-react";
-import { createContext, useContext, useState } from "react";
+import {useAuth} from "@clerk/react";
+import { useState, useEffect } from "react";
 import { axiosInstance } from "../lib/axios";
-import Loader from "../components/Loader";
+import { Loader } from "lucide-react"; 
 
 const updateApiToken = (token:string | null)=>{
     if(token){
@@ -14,7 +14,7 @@ const updateApiToken = (token:string | null)=>{
 
 const AuthProvider = ({children}: {children:React.ReactNode}) => {
     const {getToken} = useAuth();
-    const{loading,setLoading} = useState(true);
+    const [loading, setLoading] = useState(true);
 
     useEffect(()=>{
         const initAuth = async()=>{
@@ -33,10 +33,10 @@ const AuthProvider = ({children}: {children:React.ReactNode}) => {
     },[getToken]);
     if(loading) return(
         <div className="h-screen w full flex items-center justify-center">
-            <Loader className = "size-8 text-emerald-500 animate-spin" />
+            <Loader className = "size-12 text-blue-500 animate-spin" />
         </div>
     )
-    return <div>{childeren}</div>
+    return <div>{children}</div> 
 };
 
 export default AuthProvider;
