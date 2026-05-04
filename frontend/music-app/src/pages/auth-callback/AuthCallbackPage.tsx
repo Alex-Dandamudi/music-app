@@ -1,31 +1,37 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useUser } from "@clerk/react";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../../lib/axios";
 import { Loader } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card"; 
+import { Card, CardContent } from "@/components/ui/card";
 
 const AuthCallbackPage = () => {
     const { isLoaded, user } = useUser();
     const navigate = useNavigate();
-    const syncAttempted = useRef(false);
 
     useEffect(() => {
         const syncUser = async () => {
-            if (!isLoaded || !user || syncAttempted.current) return;
+            console.log("[AuthCallback] isLoaded:", isLoaded, "user:", user?.id);
+            if (!isLoaded || !user) return;
 
-            syncAttempted.current = true;
             try {
-                await axiosInstance.post("/users");
-            } catch (error) {
-                console.log("Error in auth callback", error);
-            } finally {
-                navigate("/");
+                console.log("[AuthCallback] Posting to /auth/callback...");
+                const res = await axiosInstance.post("/auth/callback", {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    imageUrl: user.imageUrl,
+                });
+                console.log("[AuthCallback] Response:", res.data);
+            } catch (error: any) {
+                console.error("[AuthCallback] Error:", error?.response?.data ?? error?.message ?? error);
             }
+            navigate("/");
         };
 
         syncUser();
     }, [isLoaded, user, navigate]);
+
 
     return (
         <div className = "h-screen w-full bg-black flex items-center justify-center">

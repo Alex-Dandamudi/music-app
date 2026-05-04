@@ -10,12 +10,13 @@ function App() {
      <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/sso-callback" element={<AuthenticateWithRedirectCallback 
+        signInForceRedirectUrl={"/auth-callback"}
         signUpForceRedirectUrl={"/auth-callback"}
         />} />
         <Route path="/auth-callback" element={<AuthCallbackPage />} />
       </Routes>     
     </>
-  );
-}
+  ); 
+} 
 
 export default App
